@@ -1,0 +1,497 @@
+{
+  "name": "whatsapp testing",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "messages"
+        ],
+        "options": {}
+      },
+      "type": "n8n-nodes-base.whatsAppTrigger",
+      "typeVersion": 1,
+      "position": [
+        -480,
+        -140
+      ],
+      "id": "27bc7d15-732f-43bd-9c48-0d1b68087b42",
+      "name": "WhatsApp Trigger",
+      "webhookId": "36dbdb7f-32b6-4a95-998f-7467b0336b84",
+      "credentials": {
+        "whatsAppTriggerApi": {
+          "id": "3UDyg3hS1F9IG7ny",
+          "name": "whatsapp testing"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "={{ $('WhatsApp Trigger').item.json.metadata.phone_number_id }}",
+        "recipientPhoneNumber": "={{ $('WhatsApp Trigger').item.json.messages[0].from }}",
+        "textBody": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        280,
+        -140
+      ],
+      "id": "416d6480-8de1-4652-838c-8064413374b6",
+      "name": "WhatsApp Business Cloud",
+      "webhookId": "035cae14-ce19-482b-981e-5795ec0cd659",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "y08eBdrmGB7mf0oX",
+          "name": "whatsapp testing send message"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=message:{{ $json.messages[0].text.body }}",
+        "options": {
+          "systemMessage": "=You are Dav Tech Pro’s smart assistant on WhatsApp.\n\nYour job is to:\n- Assist customers who want to **buy a device**\n- Help customers who want to **repair a device**\n\nSpeak like a human agent. Be polite, helpful, and friendly.\n\nStep 1: Always greet first, e.g. “Hi 👋, welcome to Dav Tech Pro! We sell and repair devices. How can I help you today?”\n\nStep 2: Based on the user's reply, follow one of two flows:\n\n--- \nIf the customer wants to **repair**:\n- Ask: \"What device would you like to repair?\"\n- Ask: \"Please describe the issue with the device.\"\n- Ask: \"Can you give me your email address so we can send confirmation?\"\n- Ask: \"Would you like to bring it to our office at No 5 Allen Street, Ikeja Lagos or use our pickup service?\"\n- After collecting all info, call the tool `logRepair` with: device, issue, email, name, phone, dropoffOption.\n- Then say: “Thanks, we’ve received your repair request!”\n\n--- \nIf the customer wants to **buy**:\n- Ask: \"What device are you looking for?\" (e.g. model, brand, storage)\n- Call the tool `searchProduct` with model/brand to find available item.\n- If found, respond with: “Yes! We have [Product] for ₦[price]. Would you like to buy it?”\n- If customer says YES:\n    - Ask for email.\n    - Say: “Please make payment to: GTBank - 1234567890”\n    - Call tool `logSalesOrder` with: product info, price, email, name, phone\n    - Say: “Once you’ve paid, reply ‘I have paid’.”\n\nAlways end each task with a helpful tone. Ask questions one by one.\nDo not respond all at once. Use a friendly tone like a human.\n\n**YOUR KNOWLEDGE BASE:**\n- **Shop Name:** Dav Tech Pro\n- **Location:** 123 Allen Avenue, Ikeja, Lagos.\n- **Working Hours:** Monday-Friday 9 AM to 6 PM; Saturday 10 AM to 4 PM.\n- **Contact Phone:** 08012345678.\n- **Services:** We expertly repair Phones, Laptops, Tablets, and Game Consoles. We fix screens, batteries, charging ports, water damage, and software issues.\n- **Products for Sale:** We sell new and UK-used iPhones, Samsung phones, MacBooks, and various accessories like chargers and cases.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -260,
+        -140
+      ],
+      "id": "a92d3d0c-2252-4b34-a928-507183c6b7e6",
+      "name": "AI Agent",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-1.5-flash-latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -440,
+        100
+      ],
+      "id": "41af8eb6-fceb-40c5-baa7-74f4fac8a880",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "JKCwwEYjsVjeXRCH",
+          "name": "Google Gemini(PaLM) Api account DAV TECH PRO"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('WhatsApp Trigger').item.json.metadata.phone_number_id }}",
+        "contextWindowLength": 20
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -220,
+        120
+      ],
+      "id": "3433799a-c143-4910-bdfe-5d729da22751",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1oZvPQDAWXaTNinzlzutNNYo0HjoFNrAJYNisSPHW62s",
+          "mode": "list",
+          "cachedResultName": "davtechpro business project",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1oZvPQDAWXaTNinzlzutNNYo0HjoFNrAJYNisSPHW62s/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "inventory",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1oZvPQDAWXaTNinzlzutNNYo0HjoFNrAJYNisSPHW62s/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        -100,
+        120
+      ],
+      "id": "d3f8eba2-0459-47ae-a620-11f20ff345c2",
+      "name": "searchProduct",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ED8u5RhGsL8qPDtJ",
+          "name": "AI AGENT DAVTECHPRO WHATSAPP"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1oZvPQDAWXaTNinzlzutNNYo0HjoFNrAJYNisSPHW62s",
+          "mode": "list",
+          "cachedResultName": "davtechpro business project",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1oZvPQDAWXaTNinzlzutNNYo0HjoFNrAJYNisSPHW62s/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1261305700,
+          "mode": "list",
+          "cachedResultName": "sales_orders",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1oZvPQDAWXaTNinzlzutNNYo0HjoFNrAJYNisSPHW62s/edit#gid=1261305700"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Customer Name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Customer_Name', `the customer name `, 'string') }}",
+            "Phone Number": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Phone_Number', `the customer phone number`, 'string') }}",
+            "Email": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Email', `the customer email address `, 'string') }}",
+            "Product Name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Product_Name', `the name of the product the customer want to buy `, 'string') }}",
+            "Storage": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Storage', `the storage of the device the customer want to get`, 'string') }}",
+            "Color": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Color', `the color of the device`, 'string') }}",
+            "Price": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Price', `the price of the gadget`, 'string') }}",
+            "Date/Time": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Date_Time', `the date and time the person purchase the device`, 'string') }}",
+            "Conversation Summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Conversation_Summary', `summary of the conversation you had with the customer`, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Customer Name",
+              "displayName": "Customer Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Phone Number",
+              "displayName": "Phone Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Product Name",
+              "displayName": "Product Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Storage",
+              "displayName": "Storage",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Color",
+              "displayName": "Color",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Price",
+              "displayName": "Price",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Payment staus",
+              "displayName": "Payment staus",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Date/Time",
+              "displayName": "Date/Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Conversation Summary",
+              "displayName": "Conversation Summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        220,
+        80
+      ],
+      "id": "01177fd8-9562-44a1-afc2-197639aad495",
+      "name": "logSalesOrder",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ED8u5RhGsL8qPDtJ",
+          "name": "AI AGENT DAVTECHPRO WHATSAPP"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1oZvPQDAWXaTNinzlzutNNYo0HjoFNrAJYNisSPHW62s",
+          "mode": "list",
+          "cachedResultName": "davtechpro business project",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1oZvPQDAWXaTNinzlzutNNYo0HjoFNrAJYNisSPHW62s/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2052065207,
+          "mode": "list",
+          "cachedResultName": "repair_request",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1oZvPQDAWXaTNinzlzutNNYo0HjoFNrAJYNisSPHW62s/edit#gid=2052065207"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Customer Name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Customer_Name', `the customer name`, 'string') }}",
+            "Phone Number": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Phone_Number', `the customer phone number`, 'string') }}",
+            "Email": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Email', `the customer email address`, 'string') }}",
+            "Device type ": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Device_type_', `the device the customer want to repair`, 'string') }}",
+            "Issue description": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Issue_description', `the issue description the customer said is wrong with the gadget `, 'string') }}",
+            "Drop-off Option (pickup/office)": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Drop-off_Option__pickup_office_', `whether the customer want the device to picked up or the customer want to come to our office, if the person want to bring it to our office then save it with office but if the customer say's i want you to do pickup then you save it as pick up`, 'string') }}",
+            "Date/Time": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Date_Time', `the date and time the customer want to repair the device `, 'string') }}",
+            "Conversation Summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Conversation_Summary', `summary of the conversation you had with the customer `, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Customer Name",
+              "displayName": "Customer Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Phone Number",
+              "displayName": "Phone Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Device type ",
+              "displayName": "Device type ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Issue description",
+              "displayName": "Issue description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Drop-off Option (pickup/office)",
+              "displayName": "Drop-off Option (pickup/office)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date/Time",
+              "displayName": "Date/Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Conversation Summary",
+              "displayName": "Conversation Summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        40,
+        100
+      ],
+      "id": "9d2aefca-0bef-4c9e-84ab-9568f2676b50",
+      "name": "logRepair",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ED8u5RhGsL8qPDtJ",
+          "name": "AI AGENT DAVTECHPRO WHATSAPP"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "WhatsApp Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "WhatsApp Business Cloud",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "searchProduct": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "logSalesOrder": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "logRepair": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "a3b7b4e9-ffdb-4bff-a593-087ae173f562",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "30182a7920ce6332dc5e275b66efeb13a0869746cbf3019348d55af9df100cf7"
+  },
+  "id": "tn5qokTliWlNIzVD",
+  "tags": []
+}
